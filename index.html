@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<link rel="stylesheet" type="text/css" title="main" href="styles/main.css">
+	<link rel="alternate stylesheet" type="text/css" title="contrast" href="styles/contrast.css">
+	<link rel="alternate stylesheet" type="text/css" title="minimal" href="styles/main-minimal.css">
+	<title>JavaScript - Homework 007 - Objects</title>
+	<script type="text/javascript">
+	function togglediv(id) {
+    var div = document.getElementById(id);
+    div.style.display = div.style.display == "none" ? "block" : "none";
+	}
+	</script>
+</head>
+<body>
+<div class="wrapper">
+		<header>
+			<h1>Homework 007 - JavaScript Objects</h1>
+		</header>
+		<div class="display-menu">
+			<form>
+				<input type="submit" onclick="switch_style('main');return false;" name="main" value="Main Theme" id="main">
+				<input type="submit" onclick="switch_style('minimal');return false;" name="minimal" value="Minimal" id="minimal">
+				<input type="submit" onclick="switch_style('contrast');return false;" name="contrast" value="Contrast" id="contrast">
+			</form>
+		</div>
+		<nav>
+			<span>Choose task: </span>
+			<ul>
+				<li><button onclick="togglediv('task1')">1</button></li>
+				<li><button onclick="togglediv('task2')">2</button></li>
+				<li><button onclick="togglediv('task3')">3</button></li>
+				<li><button onclick="togglediv('task4')">4</button></li>
+				<li><button onclick="togglediv('task5')">5</button></li>
+				<li><button onclick="togglediv('task6')">6</button></li>
+				<li><button onclick="togglediv('task7')">7</button></li>
+				<li><button onclick="togglediv('task8')">8</button></li>
+				<li><button onclick="togglediv('task9')">9</button></li>
+			</ul>
+		</nav>
+		<div class="legend">single click to expand/collapse each task - also JavaScripts can be tested via console</div>
+		<main class="content">
+		<div id="task1">
+			<h2>Problem 001 - Planar coordinates</h2>
+			<p class="description">Write functions for working with shapes in standard Planar coordinate system.
+Points are represented by coordinates P(X, Y)
+Lines are represented by two points, marking their beginning and ending L(P1(X1,Y1), P2(X2,Y2))
+Calculate the distance between two points.
+Check if three segment lines can form a triangle.</p>
+			<article>
+<pre class="code-print">
+function Point(x,y) {
+	this.x = x;
+	this.y = y;
+}
+function Line(a, b) {
+	this.a = a;
+	this.b = b;
+}
+var point001 = new Point(0,3);
+var point002 = new Point(5,1);
+var point003 = new Point(0,1);
+var point004 = new Point(10,10);
+var lines = [];
+lines[0] = new Line(point001,point002);
+lines[1] = new Line(point004,point003);
+lines[2] = new Line(point002,point003);
+lines[3] = new Line(point002,point004);
+lines[4] = new Line(point001,point004);
+lines[5] = new Line(point003,point004);
+
+var distanceCalculator = function (pointA, pointB) {
+		return Math.sqrt(Math.pow(pointA.x - pointB.x, 2)+ Math.pow(pointA.y - pointB.y, 2));
+};
+var possibleTriangle = function (lineA, lineB, lineC) {
+	var a1 = lineA.a;
+	var a2 = lineA.b;
+	var b1 = lineB.a;
+	var b2 = lineB.b;
+	var c1 = lineC.a;
+	var c2 = lineC.b;
+	if (   (distanceCalculator(a1, a2) + distanceCalculator(b1, b2) > distanceCalculator(c1, c2))  
+        || (distanceCalculator(b1, b2) + distanceCalculator(c1, c2) > distanceCalculator(a1, a2))
+        || (distanceCalculator(a1, a2) + distanceCalculator(c1, c2) > distanceCalculator(b1, b2))) {
+            return true;
+        }
+    else {
+    	return false;	
+    }
+};
+console.log(distanceCalculator(point001,point002));
+console.log(distanceCalculator(point002,point003));
+console.log(distanceCalculator(point001,point004));
+console.log(distanceCalculator(point004,point002));
+console.log("and now the triangle check..");
+for (var i = lines.length - 1; i >= 0; i--) {
+	console.log(lines[i]);
+};
+for (var i = lines.length -1; i > 1; i--) {
+	console.log( 'Triangle possible : ' + possibleTriangle(lines[i],lines[i-1],lines[i-2]));
+};
+</pre>
+				<aside>source file : javascript.js</aside>
+			</article>
+		</div>
+		<div id="task2">
+			<h2>Problem 002 - Remove Elements</h2>
+			<p class="description">Write a function that removes all elements with a given value.
+Attach it to the array type.
+Read about prototype and how to attach methods.</p>
+			<article>
+<pre class="code-print">	
+	Array.prototype.remove = function (toRemove) {
+		while (true) {
+		    var index = this.indexOf(toRemove, index);
+		    if (index !== -1) this.splice(index, 1);
+		    else break;
+		}
+	};
+
+	var arr = ['ala','bala','nica','bala', 45, 32, 45, 32,'bala'];
+	console.log("Before REMOVE : ");
+	for (var i = arr.length - 1; i >= 0; i--) {
+		console.log(arr[i]);
+	}
+	arr.remove('bala');
+	arr.remove(45);
+	console.log("AFTER remove [bala] and [45] : ");
+	for (var i = arr.length - 1; i >= 0; i--) {
+		console.log(arr[i]);
+	}
+</pre>
+				<aside>source file : javascript.js</aside>				
+			</article>
+		</div>
+		<div id="task3">
+			<h2>Problem 003 - Deep copy</h2>
+			<p class="description">Write a function that makes a deep copy of an object.
+The function should work for both primitive and reference types.</p>
+			<article>
+<pre class="code-print">
+	function deepCopy(customObject) {
+		if (typeof customObject !== 'object' ) {
+			return customObject;
+		}
+		var resultObject = new Object();
+		for (var prop in customObject) {
+			resultObject[prop] = customObject[prop];
+		}
+		return resultObject;
+	}
+	var james = {
+	    job: "programmer",
+	    married: false
+	};
+	var stamat = deepCopy(james);
+	console.log('Stamat is just as james now..')
+	console.log(stamat);
+	console.log('Stamat is '+stamat.job+' and he '
+	+(stamat.married ?'is married':'is not married'));
+</pre>
+				<aside>source file : javascript.js</aside>				
+			</article>
+		</div>
+		<div id="task4">
+			<h2>Problem 004 - Has property</h2>
+			<p class="description">Write a function that checks if a given object contains a given property.</p>
+			<article>
+<pre class="code-print">
+	var findProperty = function(customObject, customProp) {
+		var founded = false;
+		for (var prop in customObject) {
+			if (customObject[prop] === customProp) {
+				founded = true;
+			};
+		}
+		return founded;
+	}
+	var text = 'abv';
+	var jobProperty = james.job;
+	var lengthProperty = text.length;
+	var answer = findProperty(stamat, jobProperty);
+	console.log('Do object [stamat] contains property [job] : ' + answer);
+	var answer2 = findProperty(stamat, lengthProperty);
+	console.log('Do object [stamat] contains property [lenght] : ' + answer2);
+</pre>
+				<aside>source file : javascript.js</aside>				
+			</article>
+		</div>
+		<div id="task5">
+			<h2>Problem 005 - Youngest person</h2>
+			<p class="description">Write a function that finds the youngest person in a given array of people and prints his/hers full name
+Each person has properties firstname, lastname and age.</p>
+			<article>
+<pre class="code-print">
+	var people = [
+	  { firstname : 'Gosho', lastname: 'Petrov', age: 32 }, 
+	  { firstname : 'Pesho', lastname: 'Ivanov', age: 25},
+	  { firstname : 'Stamat', lastname: 'Petrov', age: 18 }, 
+	  { firstname : 'Bai Ivan', lastname: 'Pehlivanski', age: 78}
+	];
+	var findYongest = function(arr) {
+		var youngestAge = arr[0].age;
+		var youngestPerson = arr[0];
+		for(var person in arr) {
+			if (youngestAge > arr[person].age ) {
+				youngestAge = arr[person].age;
+				youngestPerson = arr[person];
+			}
+		}
+		return youngestPerson;
+	};
+	console.log('The yougest person in the array is : ');
+	console.log(findYongest(people));
+</pre>
+				<aside>source file : javascript.js</aside>				
+			</article>
+		</div>	
+		<div id="task6">
+			<h2>Problem 006 - Group the people by..</h2>
+			<p class="description">Write a function that groups an array of people by age, first or last name.
+The function must return an associative array, with keys - the groups, and values - arrays with people in this groups
+Use function overloading (i.e. just one function)</p>
+			<article>
+<pre class="code-print">
+	var group = function(arr, prop) {
+		var resultArr = new Object();
+		for (var person in arr) {
+			var temp = arr[person][prop];
+			if (resultArr[temp] === undefined || resultArr[temp] === null) {
+				resultArr[temp] = [];
+			};
+			resultArr[arr[person][prop]].push(arr[person]);
+		}
+		return resultArr;
+	};
+
+	var people = [
+	  { firstname : 'Gosho', lastname: 'Petrov', age: 32 }, 
+	  { firstname : 'Pesho', lastname: 'Ivanov', age: 26},
+	  { firstname : 'Stamat', lastname: 'Petrov', age: 18 }, 
+	  { firstname : 'Gosho', lastname: 'Pehlivanski', age: 78},
+	  { firstname : 'Maria', lastname: 'Deva', age: 26},
+	  { firstname : 'Gosho', lastname: 'Petrov', age: 18 }, 
+	  { firstname : 'Petur', lastname: 'Pehlivanski', age: 18},
+	  { firstname : 'Maria', lastname: 'Ivanova', age: 26}
+	];
+	for (var i = people.length - 1; i >= 0; i--) {
+		console.log(people[i]);
+	};
+	var groupedByAge = group(people, 'age');
+	console.log('Grouped by AGE:')
+	console.log(groupedByAge);
+	var groupedByFirstname = group(people, 'firstname');
+	console.log('Grouped by first name:')
+	console.log(groupedByFirstname);
+	var groupedByLastName = group(people, 'lastname');
+	console.log('Grouped by last name:')
+	console.log(groupedByLastName);
+</pre>
+				<aside>source file : javascript.js</aside>				
+			</article>
+		</div>	
+		<div id="task7">
+			<h2>Problem 007 </h2>
+			<p class="description"></p>
+			<article>
+<pre class="code-print">
+</pre>
+				<aside>source file : javascript.js</aside>				
+			</article>
+		</div>
+		<div id="task8">
+			<h2>Problem 008 </h2>
+			<p class="description"></p>
+			<article>
+<pre class="code-print">
+</pre>
+				<aside>source file : javascript.js</aside>				
+			</article>
+		</div>
+		<div id="task9">
+			<h2>Problem 009 </h2>
+			<p class="description"></p>
+			<article>
+<pre class="code-print">
+</pre>
+				<aside>source file : javascript.js</aside>				
+			</article>
+		</div>	
+		</main>				
+</div>
+<script type="text/javascript" src="javascript.js"></script>
+<script type="text/javascript" src="func/css-switcher.js"></script>
+</body>
+</html>
